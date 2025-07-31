@@ -1227,54 +1227,65 @@
         }
 
         // Checkout
-       function checkout() {
-    if (carrinho.length === 0) {
-        alert('Seu carrinho está vazio!');
-        return;
-    }
+        // Checkout
+        function checkout() {
+            if (carrinho.length === 0) {
+                alert('Seu carrinho está vazio!');
+                return;
+            }
 
-    const total = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
-    const itemCount = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
+            const total = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+            const itemCount = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
 
-    const checkoutBtn = document.querySelector('.checkout-btn');
-    const originalText = checkoutBtn.innerHTML;
-    
-    checkoutBtn.innerHTML = '<div class="loading"></div> Processando...';
-    checkoutBtn.disabled = true;
+            // Obter os detalhes dos itens do carrinho para a mensagem do WhatsApp
+            const detalhesItens = carrinho.map(item => {
+                return `- ${item.nome} (${item.quantidade}x) - R$ ${item.preco.toFixed(2)}`;
+            }).join('\n'); // Junta os itens com quebra de linha
 
-    setTimeout(() => {
-        // Montar o texto da mensagem para WhatsApp
-        let mensagem = `Olá! Gostaria de finalizar a compra com os seguintes itens:\n\n`;
+            // Montar a mensagem completa para o WhatsApp
+            const whatsappMessage = encodeURIComponent(
+                `Olá! Acabei de fazer um pedido em sua loja LRLupas Oficial.\n\n` +
+                `Detalhes do Pedido:\n${detalhesItens}\n\n` +
+                `Total do Pedido: R$ ${total.toFixed(2)}\n\n` +
+                `Por favor, me ajudem a finalizar a compra.`
+            );
 
-        carrinho.forEach(item => {
-            mensagem += `- ${item.quantidade} x ${item.nome} (R$ ${(item.preco * item.quantidade).toFixed(2)})\n`;
-        });
+            // Seu número de WhatsApp (com código do país e DDD, sem + ou outros caracteres)
+            const whatsappNumber = '5562999999999'; // <-- MUDAR PARA O SEU NÚMERO AQUI!
 
-        mensagem += `\nTotal: R$ ${total.toFixed(2)}\n\nObrigado pela preferência!`;
+            // Montar a URL completa do WhatsApp
+            const whatsappURL = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
-        // Codificar para URL
-        const mensagemEncoded = encodeURIComponent(mensagem);
+            // Simulate checkout process
+            const checkoutBtn = document.querySelector('.checkout-btn');
+            const originalText = checkoutBtn.innerHTML;
+            
+            checkoutBtn.innerHTML = '<div class="loading"></div> Processando...';
+            checkoutBtn.disabled = true;
 
-        // Número do WhatsApp (sem espaços, só números)
-        const numeroWhats = '5562991780328';
+            setTimeout(() => {
+                // Remover o alert antigo, pois agora redirecionaremos
+                // alert(`Compra finalizada com sucesso!\n\nItens: ${itemCount}\nTotal: R$ ${total.toFixed(2)}\n\nObrigado pela preferência!`);
+                
+                // Clear cart (opcional: você pode limpar o carrinho apenas APÓS a confirmação no WhatsApp,
+                // mas para este fluxo, vamos limpar antes de redirecionar)
+                carrinho = [];
+                updateCartDisplay();
+                closeCart();
+                
+                // Reset button (opcional: o usuário será redirecionado, então talvez não precise redefinir o botão)
+                checkoutBtn.innerHTML = originalText;
+                checkoutBtn.disabled = false;
+                
+                // Show success animation (opcional: a animação aparecerá antes do redirecionamento)
+                showSuccessAnimation('Redirecionando para o WhatsApp...'); // Mensagem mais clara
 
-        // Abrir WhatsApp Web ou App no celular
-        const urlWhats = `https://wa.me/${numeroWhats}?text=${mensagemEncoded}`;
-        window.open(urlWhats, '_blank');
+                // *** REDIRECIONAR PARA O WHATSAPP ***
+                window.location.href = whatsappURL;
 
-        // Limpar carrinho e interface
-        carrinho = [];
-        updateCartDisplay();
-        closeCart();
-        
-        // Resetar botão
-        checkoutBtn.innerHTML = originalText;
-        checkoutBtn.disabled = false;
-        
-        // Animação de sucesso
-        showSuccessAnimation('Compra finalizada!');
-    }, 2000);
-}
+            }, 2000); // 2 segundos de atraso para a animação "Processando..."
+        }
+
 
         
 
