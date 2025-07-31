@@ -1240,7 +1240,7 @@
             // Obter os detalhes dos itens do carrinho para a mensagem do WhatsApp
             const detalhesItens = carrinho.map(item => {
                 return `- ${item.nome} (${item.quantidade}x) - R$ ${item.preco.toFixed(2)}`;
-            }).join('\n'); // Junta os itens com quebra de linha
+            }).join('\n'); // Junta os itens com quebra de linha,
 
             // Montar a mensagem completa para o WhatsApp
             const whatsappMessage = encodeURIComponent(
@@ -1251,7 +1251,7 @@
             );
 
             // Seu número de WhatsApp (com código do país e DDD, sem + ou outros caracteres)
-            const whatsappNumber = '5562999999999'; // <-- MUDAR PARA O SEU NÚMERO AQUI!
+            const whatsappNumber = '5562991780328'; // <-- MUDAR PARA O SEU NÚMERO AQUI!
 
             // Montar a URL completa do WhatsApp
             const whatsappURL = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
